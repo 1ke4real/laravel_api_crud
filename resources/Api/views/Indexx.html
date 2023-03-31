@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.min.js" integrity="sha384-heAjqF+bCxXpCWLa6Zhcp4fu20XoNIA98ecBC1YkdXhszjoejr5y9Q77hIrv8R9i" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Hello</h1>
+     <main></main>
+<!--    <form action="http://127.0.0.1:8000/add" method="post">-->
+        <span>Test envoie de données avec api</span><br>
+        <input name="testName" placeholder="test  data" id="testName"><br>
+        <input name="testName2" placeholder="test  data" id="testName2"><br>
+        <input type="submit" value="Send" id="send">
+<!--    </form>-->
+     <script>
+         let alldata
+         let main = document.querySelector('main')
+         let sendButtton = document.querySelector('#send')
+
+         let testDataInput = document.querySelector('#testName')
+         let testDataInput2 = document.querySelector('#testName2')
+
+
+
+         fetch('http://127.0.0.1:8000/data')
+             .then(response => response.json())
+             .then(jsonData=> {
+                 alldata = jsonData
+                 for (let i = 0; i<alldata.length; i++){
+                     main.innerHTML += "<h2> Nom :"+alldata[i].name+"</h2> <span> Description "+alldata[i].title+"</span> <br><br>"+"<button class='suprimer' data-id='"+alldata[i].id+"'>Supprimer</button> <br> <button class='update' data-id='"+alldata[i].id+"'>Update</button> <br>"
+                 }
+
+             })
+             .then(function (){
+                 let supButton = document.querySelectorAll('.suprimer')
+                 supButton.forEach(function (button){
+                     button.addEventListener('click', function (){
+                         location.replace("http://127.0.0.1:8000/destroy/"+button.getAttribute('data-id'))
+                     })
+                 })
+
+                 let updateButton = document.querySelectorAll('.update')
+                 updateButton.forEach(function (button){
+                     button.addEventListener('click', function(){
+                         location.replace("http://127.0.0.1:3000/update/"+button.getAttribute('data-id'))
+                     })
+                 })
+             })
+
+        sendButtton.addEventListener('click', function(){
+
+            fetch('http://127.0.0.1:8000/add', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'input1': testDataInput.value,
+                    'input2': testDataInput2.value,
+                })
+            })
+                // .then(console.log(JSON.stringify(testDataInput.value)))
+                .then(response => response.json())
+                .then(response => console.log(JSON.stringify(response)))
+                .then(function () {
+                    location.reload()
+                })
+        })
+
+
+
+     </script>
+</body>
+</html>
